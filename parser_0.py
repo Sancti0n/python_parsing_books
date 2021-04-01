@@ -14,7 +14,6 @@ numberArrayVolumesBySerie = []
 arrayVolumes = []
 arraySeries = []
 informationsVolume = []
-arrayTemporary = []
 
 for linkSerie in urlLinks:
     urlSerie = urllib.request.urlopen(linkSerie.get('href'))
@@ -39,33 +38,33 @@ for i in range(len(arrayVolumes)):
     volume = BeautifulSoup(linkPageVolume, 'html.parser')
     fichier.write((volume.title.string).encode('utf-8')+b'\n')
     contentBlockVolume = (volume.find('div', id='volume-meta')).find('p')
-    arrayTemporary.extend([arrayVolumes[i], contentBlockVolume])
-    informationsVolume.append(arrayTemporary)
+    informationsVolume.extend([arrayVolumes[i], contentBlockVolume])
 
     #link author
-    arrayInfo.append((informationsVolume[0][1].find('a')).get('href'))
+    arrayInfo.append((informationsVolume[1].find('a')).get('href'))
     #author
-    arrayInfo.append((informationsVolume[0][1].find('a')).getText())
+    arrayInfo.append((informationsVolume[1].find('a')).getText())
     #release
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>Release Date:</b> ')[1]).split(' <b>'))[0])
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>Release Date:</b> ')[1]).split(' <b>'))[0])
     #price
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>Price:</b> ')[1]).split(' <b>'))[0])
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>Price:</b> ')[1]).split(' <b>'))[0])
     #format serie
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>Format:</b> ')[1]).split(' <b>'))[0])
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>Format:</b> ')[1]).split(' <b>'))[0])
     #dimension
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>Trim:</b> ')[1]).split(' <b>'))[0])
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>Trim:</b> ')[1]).split(' <b>'))[0])
     #page count
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>Page Count:</b> ')[1]).split(' <b>'))[0])
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>Page Count:</b> ')[1]).split(' <b>'))[0])
     #isbn
-    arrayInfo.append((str(str(informationsVolume[0][1]).split('<b>ISBN:</b> ')[1]).split('</p>'))[0])
-    fichier.write(informationsVolume[0][0].encode('utf-8')+b'\n')
+    arrayInfo.append((str(str(informationsVolume[1]).split('<b>ISBN:</b> ')[1]).split('</p>'))[0])
+    
+    fichier.write(informationsVolume[0].encode('utf-8')+b'\n')
 
     for info in arrayInfo:
         fichier.write(info.encode('utf-8')+b'\n')
 
     fichier.write(b'\n')
-    arrayTemporary[:]  = []
-    arrayInfo[:]  = []
+    informationsVolume[:] = []
+    arrayInfo[:] = []
 
     if b + 1 == numberArrayVolumesBySerie[a]:
         fichier.write(b'\n')
