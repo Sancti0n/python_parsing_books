@@ -57,5 +57,5 @@ for i in range(len(arrayVolumes)):
     else:
         b = b + 1
 
-with open('SevenSeas.json', 'w', encoding='utf-8') as write_file:
+with open('parser_0.json', 'w', encoding='utf-8') as write_file:
     json.dump(dict, write_file, ensure_ascii=False, indent=4)
