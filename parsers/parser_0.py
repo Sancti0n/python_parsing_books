@@ -3,7 +3,7 @@ import urllib.request
 import json
 import repackage
 repackage.up()
-from url import urlArraySeries
+from url import urlArraySeries, namePublisher
 
 urlPage = urlArraySeries[0]
 page = urllib.request.urlopen(urlPage)
@@ -57,5 +57,5 @@ for i in range(len(arrayVolumes)):
     else:
         b = b + 1
 
-with open('parser_0.json', 'w', encoding='utf-8') as write_file:
+with open(namePublisher[0]+'.json', 'w', encoding='utf-8') as write_file:
     json.dump(dict, write_file, ensure_ascii=False, indent=4)
