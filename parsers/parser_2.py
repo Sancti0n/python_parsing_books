@@ -30,7 +30,6 @@ for links in arrayLinksPages:
     for link in urlLinks:
             tabLink.append((link.find('a')).get('href'))
 
-
 for i in range(len(tabLink)):
     pageVolume = urllib.request.urlopen(urlDomain[1]+tabLink[i])
     soupVolume = BeautifulSoup(pageVolume, 'html.parser')
