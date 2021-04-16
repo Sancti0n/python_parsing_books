@@ -1,8 +1,7 @@
-import socket
-socket.setdefaulttimeout(5000)
 from bs4 import BeautifulSoup
 import urllib.request
 import time
+import re
 import json
 import repackage
 repackage.up()
@@ -37,32 +36,84 @@ for i in range(len(tabLink)):
     blockGenres = soupVolume.find_all('div', class_='genre')
     blockMeta = soupVolume.find('div', class_='product-meta')
 
-    for nbGenre in range(len(blockGenres[0].find_all('a'))):
-        if len(blockGenres[0].find_all('a')) == nbGenre+1:
-            genres = genres + str((blockGenres[0].find_all('a'))[nbGenre].getText())
-        else:
-            genres = genres + str((blockGenres[0].find_all('a'))[nbGenre].getText()) +", "
+    print(tabLink[i])
+    if re.search('Writer:</dt><dd>', blockCreators):
+        writer = (((blockCreators.split('Writer:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1]
+    else:
+        writer = 'Undefined'
+
+    if re.search('Artist:</dt><dd>', blockCreators):
+        artist = (((blockCreators.split('Artist:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1]
+    else:
+        artist = 'Undefined'
+
+    if re.search('Letterer:</dt><dd>', blockCreators):
+        letterer = ((blockCreators.split('Letterer:</dt><dd>'))[1].split('</dd><dt>')[0])
+    else:
+        letterer = 'Undefined'
+
+    if re.search('Translator:</dt><dd>', blockCreators):
+        translator = ((blockCreators.split('Translator:</dt><dd>'))[1].split('</dd>')[0]).replace('&amp;', '&')
+    else:
+        translator = 'Undefined'
+
+    if re.search('Editor:</dt><dd>', blockCreators):
+        editor = (((blockCreators.split('Editor:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1]
+    else:
+        editor = 'Undefined'
+
+    if re.search('Cover Artist:</dt><dd>', blockCreators):
+        coverArtist = ((((blockCreators.split('Cover Artist:</dt><dd>'))[1]).split('">')[1]).split('</a>'))[0]
+    else:
+        coverArtist = 'Undefined'
+
+    if len(blockGenres) >= 1:
+        for nbGenre in range(len(blockGenres[0].find_all('a'))):
+            if len(blockGenres[0].find_all('a')) == nbGenre+1:
+                genres = genres + str((blockGenres[0].find_all('a'))[nbGenre].getText())
+            else:
+                genres = genres + str((blockGenres[0].find_all('a'))[nbGenre].getText()) +", "
+    else:
+        genres = 'Undefined'
+    
+    if re.search('Age range:', blockMeta.getText()):
+        age = ((blockMeta.getText()).split('Age range:'))[1].split('ISBN-10:')[0].replace('\n', '')
+    else:
+        age = 'Undefined'
+
+    if re.search('ISBN-10:', blockMeta.getText()):
+        isbn10 = ((blockMeta.getText()).split('ISBN-10:'))[1].split('ISBN-13:')[0].replace('\n', '')
+    else:
+        isbn10 = 'Undefined'
+
+    if re.search('ISBN-13:', blockMeta.getText()):
+        isbn13 = ((blockMeta.getText()).split('ISBN-13:'))[1].split('</dd>')[0].replace('\n', '')
+    else:
+        isbn13 = 'Undefined'
 
     dict[i] = {
         'id': i,
         'title' : (soupVolume.find('h2', class_='title')).getText(),
-        'writer' : (((blockCreators.split('Writer:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1],
-        'artist' : (((blockCreators.split('Artist:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1],
-        'letterer' : ((blockCreators.split('Letterer:</dt><dd>'))[1].split('</dd><dt>')[0]),
-        'translator' : ((blockCreators.split('Translator:</dt><dd>'))[1].split('</dd><dt>')[0]).replace('&amp;', '&'),
-        'editor' : (((blockCreators.split('Editor:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1],
-        'cover artist' : ((((blockCreators.split('Cover Artist:</dt><dd>'))[1]).split('">')[1]).split('</a>'))[0],
+        'writer' : writer,
+        'artist' : artist,
+        'letterer' : letterer,
+        'translator' : translator,
+        'editor' : editor,
+        'cover artist' : coverArtist,
         'genres' : genres,
         'date' : ((blockMeta.getText()).split('Publication Date:'))[1].split('Format:')[0].replace('\n', ''),
         'format' : ((blockMeta.getText()).split('Format:'))[1].split('Price:')[0].replace('\n', ''),
         'price' : ((blockMeta.getText()).split('Price:'))[1].split('Age range:')[0].replace('\n', ''),
-        'age' : ((blockMeta.getText()).split('Age range:'))[1].split('ISBN-10:')[0].replace('\n', ''),
-        'isbn-10' : ((blockMeta.getText()).split('ISBN-10:'))[1].split('ISBN-13:')[0].replace('\n', ''),
-        'isbn-13' : ((blockMeta.getText()).split('ISBN-13:'))[1].split('</dd>')[0].replace('\n', '')
+        'age' : age,
+        'isbn-10' : isbn10,
+        'isbn-13' : isbn13
     }
+
+    genres = ""
 
 stop = time.time()
 print("The time of the run:", stop - start, "s")
+#The time of the run: 670.8903725147247 s
 
 with open(namePublisher[2]+'.json', 'w', encoding='utf-8') as write_file:
     json.dump(dict, write_file, ensure_ascii=False, indent=4)
