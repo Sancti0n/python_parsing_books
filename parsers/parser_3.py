@@ -1,11 +1,13 @@
-from bs4 import BeautifulSoup
-import urllib.request
-import time
 import re
-import json
+import time
+import urllib.request
+
 import repackage
+from bs4 import BeautifulSoup
+
 repackage.up()
-from url import urlArraySeries, urlDomain, namePublisher
+from toJSON import toJson
+from url import namePublisher, urlArraySeries, urlDomain
 
 start = time.time()
 urlPage = urlArraySeries[3]
@@ -45,5 +47,4 @@ stop = time.time()
 print("The time of the run:", stop - start, "s")
 #The time of the run: 114.21253252029419 s
 
-with open(namePublisher[3]+'.json', 'w', encoding='utf-8') as write_file:
-    json.dump(dict, write_file, ensure_ascii=False, indent=4)
+toJson(namePublisher[3], dict)

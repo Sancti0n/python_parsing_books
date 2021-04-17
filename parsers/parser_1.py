@@ -1,23 +1,27 @@
 import socket
+
 socket.setdefaulttimeout(5000)
-from bs4 import BeautifulSoup
-from urllib.request import urlopen, Request 
-import time
 import re
-import json
+import time
+from urllib.request import Request, urlopen
+
 import repackage
+from bs4 import BeautifulSoup
+
 repackage.up()
-from url import urlArraySeries, urlDomain, namePublisher
+from toJSON import toJson
+from url import namePublisher, urlArraySeries, urlDomain
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 start = time.time()
-
 urlPage = urlArraySeries[1]
 page = urlopen(Request(urlPage, headers=headers)).read()
 soup = BeautifulSoup(page, 'html.parser')
 blocksSeries = soup.find_all('div', class_='series-title')
-
 arrayLinks = []
+arrayLinksVolume = []
+linksTemporary = []
+dict = {}
 
 for links in blocksSeries:
     if ((links.find('a')).get('href'))[0] == '/':
@@ -25,10 +29,6 @@ for links in blocksSeries:
     else:
         urlSerie = (links.find('a')).get('href')
     arrayLinks.append(urlSerie)
-
-arrayLinksVolume = []
-linksTemporary = []
-dict = {}
 
 for links in arrayLinks:
     urlSerie = urlopen(Request(links.replace('\n&', '&'), headers=headers)).read()
@@ -42,15 +42,14 @@ for links in arrayLinks:
             if ((var).get('href'))[0] == '/':
                 arrayLinksVolume.append(urlDomain[0] + (var).get('href'))
             else:
-                arrayLinksVolume.append((var).get('href'))
-                
+                arrayLinksVolume.append((var).get('href'))            
         linksTemporary[:] = []
 
 for i in range(len(arrayLinksVolume)):
     urlSerie = urlopen(Request(arrayLinksVolume[i], headers=headers)).read()
     pageVolume = BeautifulSoup(urlSerie, 'html.parser')
-
     title = (((str(pageVolume.find('h2', id='book-title')).split('>'))[1]).split('<'))[0]
+    
     if re.search(', Vol. ', title):
         tempTitle = (title.split(', Vol. '))[0]
     else:
@@ -92,5 +91,4 @@ stop = time.time()
 print("The time of the run:", stop - start, "s")
 #The time of the run: 5390.788335323334 s
 
-with open(namePublisher[1]+'.json', 'w', encoding='utf-8') as write_file:
-    json.dump(dict, write_file, ensure_ascii=False, indent=4)
+toJson(namePublisher[1], dict)

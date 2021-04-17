@@ -1,11 +1,13 @@
-from bs4 import BeautifulSoup
-import urllib.request
-import time
 import re
-import json
+import time
+import urllib.request
+
 import repackage
+from bs4 import BeautifulSoup
+
 repackage.up()
-from url import urlArraySeries, urlDomain, namePublisher
+from toJSON import toJson
+from url import namePublisher, urlArraySeries, urlDomain
 
 start = time.time()
 urlPage = urlArraySeries[2]
@@ -27,7 +29,7 @@ for links in arrayLinksPages:
     urlLinks = soupUrl.find_all('div', class_='list_item')
 
     for link in urlLinks:
-            tabLink.append((link.find('a')).get('href'))
+        tabLink.append((link.find('a')).get('href'))
 
 for i in range(len(tabLink)):
     pageVolume = urllib.request.urlopen(urlDomain[1]+tabLink[i])
@@ -115,5 +117,4 @@ stop = time.time()
 print("The time of the run:", stop - start, "s")
 #The time of the run: 670.8903725147247 s
 
-with open(namePublisher[2]+'.json', 'w', encoding='utf-8') as write_file:
-    json.dump(dict, write_file, ensure_ascii=False, indent=4)
+toJson(namePublisher[2], dict)
