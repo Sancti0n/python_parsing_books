@@ -2,21 +2,16 @@ import socket
 
 socket.setdefaulttimeout(5000)
 import re
-import time
 from urllib.request import Request, urlopen
 
 import repackage
 from bs4 import BeautifulSoup
 
 repackage.up()
-from toJSON import toJson
-from url import namePublisher, urlArraySeries, urlDomain
+from functions import *
+from url import *
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
-start = time.time()
-urlPage = urlArraySeries[1]
-page = urlopen(Request(urlPage, headers=headers)).read()
-soup = BeautifulSoup(page, 'html.parser')
+start, soup, headers = beginParsingWithHeaders(urlArraySeries[1])
 blocksSeries = soup.find_all('div', class_='series-title')
 arrayLinks = []
 arrayLinksVolume = []
@@ -29,6 +24,7 @@ for links in blocksSeries:
     else:
         urlSerie = (links.find('a')).get('href')
     arrayLinks.append(urlSerie)
+    print(urlSerie)
 
 for links in arrayLinks:
     urlSerie = urlopen(Request(links.replace('\n&', '&'), headers=headers)).read()
@@ -87,8 +83,6 @@ for i in range(len(arrayLinksVolume)):
         'subgenres' : (((str(pageVolume.find('div', id='book-categories')).split('</h4>'))[2].split('</div>'))[0].replace('\n', '')).replace('&amp;', '&')
     }
 
-stop = time.time()
-print("The time of the run:", stop - start, "s")
-#The time of the run: 5390.788335323334 s
-
 toJson(namePublisher[1], dict)
+endingParsing(start)
+#The time of the run: 5390.788335323334 s

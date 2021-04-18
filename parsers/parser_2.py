@@ -1,18 +1,14 @@
 import re
-import time
 import urllib.request
 
 import repackage
 from bs4 import BeautifulSoup
 
 repackage.up()
-from toJSON import toJson
-from url import namePublisher, urlArraySeries, urlDomain
+from functions import *
+from url import *
 
-start = time.time()
-urlPage = urlArraySeries[2]
-page = urllib.request.urlopen(urlPage)
-soup = BeautifulSoup(page, 'html.parser')
+start, soup = beginParsing(urlArraySeries[2])
 nbPages = ((((soup.find('span', class_='small_text')).getText()).split(' of '))[1]).split(' \xa0')[0]
 arrayLinksPages = []
 tabLink = []
@@ -20,8 +16,8 @@ dict = {}
 genres = ""
 
 for i in range(1, int(nbPages)+1):
-    tempUrl = urlPage[:-1]
-    arrayLinksPages.append(tempUrl+'='+str(i))
+    arrayLinksPages.append(urlArraySeries[2][:-1]+'='+str(i))
+    print(arrayLinksPages)
 
 for links in arrayLinksPages:
     linkVolume = urllib.request.urlopen(links)
@@ -38,7 +34,6 @@ for i in range(len(tabLink)):
     blockGenres = soupVolume.find_all('div', class_='genre')
     blockMeta = soupVolume.find('div', class_='product-meta')
 
-    print(tabLink[i])
     if re.search('Writer:</dt><dd>', blockCreators):
         writer = (((blockCreators.split('Writer:</dt><dd>'))[1].split('</a></dd><dt>')[0]).split('">'))[1]
     else:
@@ -113,8 +108,6 @@ for i in range(len(tabLink)):
 
     genres = ""
 
-stop = time.time()
-print("The time of the run:", stop - start, "s")
-#The time of the run: 670.8903725147247 s
-
 toJson(namePublisher[2], dict)
+endingParsing(start)
+#The time of the run: 670.8903725147247 s

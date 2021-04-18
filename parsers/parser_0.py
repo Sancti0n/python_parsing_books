@@ -1,18 +1,14 @@
-import time
 import urllib.request
 
 import repackage
 from bs4 import BeautifulSoup
 
 repackage.up()
-from toJSON import toJson
-from url import namePublisher, urlArraySeries
+from functions import *
+from url import *
 
-start = time.time()
-urlPage = urlArraySeries[0]
-page = urllib.request.urlopen(urlPage)
-soup = BeautifulSoup(page, 'html.parser')
-urlLinks = soup.select("div h3 a")
+start, soup = beginParsing(urlArraySeries[0])
+urlLinks = (soup.select("div h3 a"))
 numberArrayVolumesBySerie = []
 arrayVolumes = []
 arraySeries = []
@@ -51,6 +47,7 @@ for i in range(len(arrayVolumes)):
         'page count' : ((str(informationsVolume[1]).split('<b>Page Count:</b> ')[1]).split(' <b>'))[0],
         'isbn' : ((str(informationsVolume[1]).split('<b>ISBN:</b> ')[1]).split('</p>'))[0]
     }
+    print(dict[i])
     informationsVolume[:] = []
     if b + 1 == numberArrayVolumesBySerie[a]:
         a = a + 1
@@ -58,7 +55,6 @@ for i in range(len(arrayVolumes)):
     else:
         b = b + 1
 
-stop = time.time()
-print("The time of the run:", stop - start, "s")
-
 toJson(namePublisher[0], dict)
+endingParsing(start)
+#The time of the run: 1799.3289155960083 s

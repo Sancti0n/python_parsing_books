@@ -1,18 +1,14 @@
 import re
-import time
 import urllib.request
 
 import repackage
 from bs4 import BeautifulSoup
 
 repackage.up()
-from toJSON import toJson
-from url import namePublisher, urlArraySeries, urlDomain
+from functions import *
+from url import *
 
-start = time.time()
-urlPage = urlArraySeries[3]
-page = urllib.request.urlopen(urlPage)
-soup = BeautifulSoup(page, 'html.parser')
+start, soup = beginParsing(urlArraySeries[3])
 blockManga = (soup.find('dl', id='acMenu')).find_all('a')
 arrayLinks = []
 dict = {}
@@ -43,8 +39,6 @@ for link in arrayLinks:
             i=i+1
     blockInformations[:] = []
 
-stop = time.time()
-print("The time of the run:", stop - start, "s")
-#The time of the run: 114.21253252029419 s
-
 toJson(namePublisher[3], dict)
+endingParsing(start)
+#The time of the run: 114.21253252029419 s
