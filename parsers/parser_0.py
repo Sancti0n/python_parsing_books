@@ -47,7 +47,7 @@ for i in range(len(arrayVolumes)):
         'page count' : ((str(informationsVolume[1]).split('<b>Page Count:</b> ')[1]).split(' <b>'))[0],
         'isbn' : ((str(informationsVolume[1]).split('<b>ISBN:</b> ')[1]).split('</p>'))[0]
     }
-    print(dict[i])
+    
     informationsVolume[:] = []
     if b + 1 == numberArrayVolumesBySerie[a]:
         a = a + 1

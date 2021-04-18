@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 
 from url import *
 
-
 def beginParsing(urlArraySeries):
     start = time.time()
     page = urllib.request.urlopen(urlArraySeries)

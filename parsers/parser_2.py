@@ -17,7 +17,6 @@ genres = ""
 
 for i in range(1, int(nbPages)+1):
     arrayLinksPages.append(urlArraySeries[2][:-1]+'='+str(i))
-    print(arrayLinksPages)
 
 for links in arrayLinksPages:
     linkVolume = urllib.request.urlopen(links)

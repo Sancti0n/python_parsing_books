@@ -24,7 +24,6 @@ for links in blocksSeries:
     else:
         urlSerie = (links.find('a')).get('href')
     arrayLinks.append(urlSerie)
-    print(urlSerie)
 
 for links in arrayLinks:
     urlSerie = urlopen(Request(links.replace('\n&', '&'), headers=headers)).read()
