@@ -12,25 +12,38 @@ start, soup = beginParsing(urlArraySeries[5])
 numPage = int(((soup.find('div', class_='pagination l-cluster l-cluster--center l-cluster--end-vertical')).find_all('a'))[-2].getText().replace('\n', '').replace(' ', ''))
 
 arrayLinksSeries = []
+arrayNamesSeries = []
 for i in range(1, int(numPage)+1):
     arrayLinksSeries.append(urlArraySeries[5]+'page/'+str(i))
-
-
-
 
 arrayLinksVolumes = []
 dict = {}
 for urlLink in arrayLinksSeries:
     blockLinkSerie = urllib.request.urlopen(urlLink)
     soupUrl = BeautifulSoup(blockLinkSerie, 'html.parser')
-    blockVolumes = soupUrl.find_all('ul', class_='l-reel l-reel--4-up u-break-words')
-    
+    blockVolumes = soupUrl.find_all('h3', class_='title')
+
     for linkVolume in blockVolumes:
         urlVolumes = linkVolume.find_all('a', class_='card__link')
 
         for link in urlVolumes:
+            arrayNamesSeries.append(urlDomain[4]+((link.get('href')).split('/series/')[1][:-1]))
+
+for link in arrayNamesSeries:
+    blockLinkSerie = urllib.request.urlopen(link)
+    soupUrl = BeautifulSoup(blockLinkSerie, 'html.parser')
+    blockVolumes = soupUrl.find_all('h3', class_='title')
+
+    for linkVolume in blockVolumes:
+        urlVolumes = linkVolume.find_all('a', class_='card__link')
+
+        for link in urlVolumes:
+            #print(link.get('href'))
             arrayLinksVolumes.append(link.get('href'))
 
+#print(arrayLinksVolumes)
+#done
+'''
 for i in range(len(arrayLinksVolumes)):
     blockLinkSerie = urllib.request.urlopen(arrayLinksVolumes[i])
     soupUrlVolume = BeautifulSoup(blockLinkSerie, 'html.parser')
@@ -72,6 +85,6 @@ for i in range(len(arrayLinksVolumes)):
         'eisbn13' : eisbn13,
     }
 print(dict)
-'''
+
 toJson(namePublisher[5], dict)
 endingParsing(start)'''
