@@ -18,6 +18,7 @@ for i in range(1, int(numPage)+1):
 
 arrayLinksVolumes = []
 dict = {}
+
 for urlLink in arrayLinksSeries:
     blockLinkSerie = urllib.request.urlopen(urlLink)
     soupUrl = BeautifulSoup(blockLinkSerie, 'html.parser')
@@ -27,22 +28,11 @@ for urlLink in arrayLinksSeries:
         urlVolumes = linkVolume.find_all('a', class_='card__link')
 
         for link in urlVolumes:
-            arrayNamesSeries.append(urlDomain[4]+((link.get('href')).split('/series/')[1][:-1]))
-
-for link in arrayNamesSeries:
-    blockLinkSerie = urllib.request.urlopen(link)
-    soupUrl = BeautifulSoup(blockLinkSerie, 'html.parser')
-    blockVolumes = soupUrl.find_all('h3', class_='title')
-
-    for linkVolume in blockVolumes:
-        urlVolumes = linkVolume.find_all('a', class_='card__link')
-
-        for link in urlVolumes:
-            #print(link.get('href'))
             arrayLinksVolumes.append(link.get('href'))
 
 #print(arrayLinksVolumes)
 #done
+
 '''
 for i in range(len(arrayLinksVolumes)):
     blockLinkSerie = urllib.request.urlopen(arrayLinksVolumes[i])
@@ -87,4 +77,5 @@ for i in range(len(arrayLinksVolumes)):
 print(dict)
 
 toJson(namePublisher[5], dict)
-endingParsing(start)'''
+endingParsing(start)
+'''
