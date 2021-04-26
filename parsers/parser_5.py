@@ -1,3 +1,6 @@
+import socket
+
+socket.setdefaulttimeout(5000)
 import re
 import urllib.request
 
@@ -33,51 +36,58 @@ for i in range(len(arrayLinksVolumes)):
     blockLinkSerie = urllib.request.urlopen(arrayLinksVolumes[i])
     soupUrlVolume = BeautifulSoup(blockLinkSerie, 'html.parser')
     blockPrint = soupUrlVolume.find('div', class_='product-info-box__release-info l-stack l-stack--fill-last u-no-gap')
-    subBlockPrint = blockPrint.find_all('div', class_='product-info-box__cell')
-    blockInformations = soupUrlVolume.find('div', class_='l-stack l-stack--fill-last u-no-gap')
-    subBlockInfo = blockInformations.find_all('div', class_='product-info-box__cell')
-
-    author = 'Undefined'
-    if re.search('byline', str(soupUrlVolume)):
-        author = ((soupUrlVolume.find('p', class_='byline')).getText()).replace('By ', '')
-
-    isbn13 = printRelease = eisbn13 = ebookRelease = 'Undefined'
-
-    for subBlock in subBlockPrint:
-        if re.search('_print_release', str(subBlock)):
-            printRelease = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_isbn', str(subBlock)):
-            isbn13 = (subBlock.find_all('span', class_='tag'))[1].getText()
-        if re.search('_ebook_release', str(subBlock)):
-            ebookRelease = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_eisbn', str(subBlock)):
-            eisbn13 = (subBlock.find_all('span', class_='tag'))[1].getText()
     
-    rating = status = formats = tags = pages = 'Undefined'
+    author = printRelease = isbn13 = ebookRelease = eisbn13 = rating = status = formats = tags = pages = 'Undefined'
     
-    for subBlock in subBlockInfo:
-        if re.search('_rating', str(subBlock)):
-            rating = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_status', str(subBlock)):
-            status = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_formats', str(subBlock)):
-            formats = ''
-            if len(subBlock.find_all('span', class_='tag')) > 1:
-                for i in range(len(subBlock.find_all('span', class_='tag'))):
-                    formats = (subBlock.find_all('span', class_='tag'))[i].getText() +', '+ formats
-            else:
-                formats = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_tags', str(subBlock)):
-            tags = ''
-            if len(subBlock.find_all('span', class_='tag')) > 1:
-                for i in range(len(subBlock.find_all('span', class_='tag'))):
-                    tags = (subBlock.find_all('span', class_='tag'))[i].getText() +', '+ tags
-            else:
-                tags = (subBlock.find_all('span', class_='tag'))[0].getText()
-        if re.search('_pages', str(subBlock)):
-            pages = (subBlock.find_all('span', class_='tag'))[0].getText()
-
-    print(((soupUrlVolume.find('h1', class_='title title--product-page')).getText()).replace('\n  ', '').replace('\n', ''))
+    if blockPrint:
+        subBlockPrint = blockPrint.find_all('div', class_='product-info-box__cell')
+        blockInformations = soupUrlVolume.find('div', class_='l-stack l-stack--fill-last u-no-gap')
+        subBlockInfo = blockInformations.find_all('div', class_='product-info-box__cell')
+        
+        if re.search('byline', str(soupUrlVolume)):
+            author = ((soupUrlVolume.find('p', class_='byline')).getText()).replace('By ', '')
+            
+        for subBlock in subBlockPrint:
+            if re.search('_print_release', str(subBlock)):
+                printRelease = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_isbn', str(subBlock)):
+                isbn13 = (subBlock.find_all('span', class_='tag'))[1].getText()
+            if re.search('_ebook_release', str(subBlock)):
+                ebookRelease = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_eisbn', str(subBlock)):
+                if len(subBlock.find_all('span', class_='tag')) > 1:
+                    eisbn13 = (subBlock.find_all('span', class_='tag'))[1].getText()
+                else:
+                    eisbn13 = (subBlock.find_all('span', class_='tag'))[0].getText()
+                
+        for subBlock in subBlockInfo:
+            if re.search('_rating', str(subBlock)):
+                rating = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_status', str(subBlock)):
+                status = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_formats', str(subBlock)):
+                if subBlock.find_all('span', class_='tag'):
+                    if len(subBlock.find_all('span', class_='tag')) > 1:
+                        formats = ''
+                        for a in range(len(subBlock.find_all('span', class_='tag'))):
+                            if (a+1) == len(subBlock.find_all('span', class_='tag')):
+                                formats += (subBlock.find_all('span', class_='tag'))[a].getText()
+                            else:
+                                formats += (subBlock.find_all('span', class_='tag'))[a].getText() + ', '
+                    else:
+                        formats = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_tags', str(subBlock)):
+                if len(subBlock.find_all('span', class_='tag')) > 1:
+                    tags = ''
+                    for b in range(len(subBlock.find_all('span', class_='tag'))):
+                        if (b+1) == len(subBlock.find_all('span', class_='tag')):
+                            tags += (subBlock.find_all('span', class_='tag'))[b].getText()
+                        else:
+                            tags += (subBlock.find_all('span', class_='tag'))[b].getText() + ', '
+                else:
+                    tags = (subBlock.find_all('span', class_='tag'))[0].getText()
+            if re.search('_pages', str(subBlock)):
+                pages = (subBlock.find_all('span', class_='tag'))[0].getText()
 
     dict[i] = {
         'i' : i,
@@ -93,8 +103,8 @@ for i in range(len(arrayLinksVolumes)):
         'formats' : formats,
         'tags' : tags,
         'pages' : pages
-
     }
 
 toJson(namePublisher[5], dict)
 endingParsing(start)
+#The time of the run: 4514.610221147537 s
